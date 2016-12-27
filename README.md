@@ -9,7 +9,7 @@ Using S3 for backend storage.
 ## Create a user to allow our docker registry to access the new bucket
 
     Goto AWS Services -> IAM -> Create New Users
-    Write keep your Access Key and Secret Access Key
+    Keep your Access Key and Secret Access Key
     Under the Permission section, click on Attach User Policy.
     
 ```json
