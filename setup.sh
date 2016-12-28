@@ -1,6 +1,7 @@
 #!/bin/bash
 # Default variables
 hostname="registry.domain.com"
+registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
 
 # AWS S3 Setting Default variables
 access_key="AWS_KEY"
@@ -214,12 +215,13 @@ user_config() {
     cp $registry_tmp_file $registry_config_file
     cp $portus_tmp_file $portus_config_file
 
-    sed -i "s/EXTERNAL_IP/$hostname/g"          $registry_config_file
-    sed -i "s/REGISTRY_PORT/$port/g"            $registry_config_file
-    sed -i "s/AWS_REGION/$region/g"             $registry_config_file
-    sed -i "s/AWS_BUCKET/$bucket/g"             $registry_config_file
-    sed -i "s/AWS_KEY/$access_key/g"            $registry_config_file
-    sed -i "s/AWS_SECRET/$secret/g"             $registry_config_file
+    sed -i "s/EXTERNAL_IP/$hostname/g"                  $registry_config_file
+    sed -i "s/REGISTRY_PORT/$port/g"                    $registry_config_file
+    sed -i "s/AWS_REGION/$region/g"                     $registry_config_file
+    sed -i "s/AWS_BUCKET/$bucket/g"                     $registry_config_file
+    sed -i "s/AWS_KEY/$access_key/g"                    $registry_config_file
+    sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
+    sed -i "s/REGISTRY_SECRET/$registry_http_secret/g"  $registry_config_file
 
     sed -i "s/SMTP_HOST/$smtp_address/g"        $portus_config_file
     sed -i "s/SMTP_PORT/$smtp_port/g"           $portus_config_file
