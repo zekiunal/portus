@@ -54,7 +54,7 @@ download_portus() {
 database_up() {
     echo "Database service create"
     docker rm -f ${db_container}
-    docker run -d --name ${db_container} -e MYSQL_ROOT_PASSWORD="portus" library/mariadb:10.0.23
+    docker run -d --name ${db_container} -v /mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD="portus" library/mariadb:10.0.23
     sleep 10
 }
 
