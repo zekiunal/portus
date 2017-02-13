@@ -15,6 +15,9 @@ smtp_port="587"
 smtp_user_name="username"
 smtp_password="user_password"
 
+# New Relic Settings
+new_relic="916a6593baf44f256c9835b90b622b410ac1248ez"
+
 # config files
 registry_config_file="config/registry/config.yml"
 registry_tmp_file="config/registry/config.yml.tmpl"
@@ -97,6 +100,8 @@ user_config() {
     local smtp_port=$smtp_port
     local smtp_user_name=$smtp_user_name
     local smtp_password=$smtp_password
+
+    local new_relic=$new_relic
 
     local port=5000
 
@@ -195,6 +200,15 @@ user_config() {
             fi
         fi
 
+        if [ ! -z $new_relic ]
+            then
+                read -p "SMTP password? [$new_relic]: " new_value
+                if [ ! -z $new_value ]
+                    then
+                        new_relic=$new_value
+            fi
+        fi
+
         echo -e "\nDoes this look right?\n"
         echo "Hostname          : $hostname"
         echo "Port              : $port"
@@ -207,6 +221,8 @@ user_config() {
         echo "SMTP port         : $smtp_port"
         echo "SMTP username     : $smtp_user_name"
         echo "SMTP password     : $smtp_password"
+
+         echo "New Relic        : $new_relic"
 
         echo ""
         read -p "ENTER to continue, 'n' to try again, Ctrl+C to exit: " config_ok
