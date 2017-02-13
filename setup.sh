@@ -202,7 +202,7 @@ user_config() {
 
         if [ ! -z $new_relic ]
             then
-                read -p "SMTP password? [$new_relic]: " new_value
+                read -p "New Relic Key? [$new_relic]: " new_value
                 if [ ! -z $new_value ]
                     then
                         new_relic=$new_value
