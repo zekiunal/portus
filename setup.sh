@@ -10,7 +10,7 @@ region="eu-central-1"
 bucket="bucket.registry.domain.com"
 
 # SMTP Settings
-smtp_address="smtp.domain.com"
+smtp_address="smtp.elasticemail.com"
 smtp_port="587"
 smtp_user_name="username"
 smtp_password="user_password"
@@ -237,7 +237,8 @@ user_config() {
     sed -i "s/AWS_BUCKET/$bucket/g"                     $registry_config_file
     sed -i "s/AWS_KEY/$access_key/g"                    $registry_config_file
     sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
-    sed -i "s/REGISTRY_SECRET/$registry_http_secret/g"  $registry_config_file
+    sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
+    sed -i "s/NEW_RELIC/$new_relic/g"                   $registry_config_file
 
     sed -i "s/SMTP_HOST/$smtp_address/g"        $portus_config_file
     sed -i "s/SMTP_PORT/$smtp_port/g"           $portus_config_file
