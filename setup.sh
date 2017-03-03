@@ -254,8 +254,6 @@ user_config() {
         read -p "ENTER to continue, 'n' to try again, Ctrl+C to exit: " config_ok
     done
 
-    exit;
-    
     cp $registry_tmp_file $registry_config_file
     cp $portus_tmp_file $portus_config_file
 
