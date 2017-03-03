@@ -84,13 +84,14 @@ cron_up() {
 registry_up() {
     echo "Portus Registry up"
     docker rm -f ${registry_container}
-    docker run -d --link ${web_container} -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro --name ${registry_container} -p 5001:5001 -p 5000:5000 -e PORTUS_MACHINE_FQDN=${hostname} -e PORTUS_DB_HOST=${db_container} library/registry:2.3.1
+    docker run -d --link ${web_container} -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro -v /registry_data:/registry_data --name ${registry_container} -p 5001:5001 -p 5000:5000 -e PORTUS_MACHINE_FQDN=${hostname} -e PORTUS_DB_HOST=${db_container} library/registry:2.3.1
 }
 
 user_config() {
     local delete="true"
     local ssl="false"
 
+    local aws="y"
     local access_key=$access_key
     local secret=$secret
     local region=$region
@@ -125,42 +126,6 @@ user_config() {
             if [ ! -z $new_value ]
                 then
                     port=$new_value
-            fi
-        fi
-
-        if [ ! -z $access_key ]
-            then
-                read -p "Your AWS Access Key? [$access_key]: " new_value
-                if [ ! -z $new_value ]
-                    then
-                        access_key=$new_value
-            fi
-        fi
-
-        if [ ! -z $secret ]
-            then
-                read -p "Your AWS Secret Key? [$secret]: " new_value
-                if [ ! -z $new_value ]
-                    then
-                        secret=$new_value
-            fi
-        fi
-
-        if [ ! -z $region ]
-            then
-                read -p "The AWS region in which your bucket exists? [$region]: " new_value
-                if [ ! -z $new_value ]
-                    then
-                        region=$new_value
-            fi
-        fi
-
-        if [ ! -z $bucket ]
-            then
-                read -p "The bucket name in which you want to store the registry's data? [$bucket]: " new_value
-                if [ ! -z $new_value ]
-                    then
-                        bucket=$new_value
             fi
         fi
 
@@ -209,35 +174,102 @@ user_config() {
             fi
         fi
 
+        if [ ! -z $aws ]
+            then
+                read -p "Do you want use AWS S3? [$aws]: " new_value
+                if [ ! -z $new_value ]
+                    then
+                        aws=$new_value
+            fi
+        fi
+
+        if [ $aws == "y" ]
+            then
+                if [ ! -z $access_key ]
+                    then
+                        read -p "Your AWS Access Key? [$access_key]: " new_value
+                        if [ ! -z $new_value ]
+                            then
+                                access_key=$new_value
+                    fi
+                fi
+
+                if [ ! -z $secret ]
+                    then
+                        read -p "Your AWS Secret Key? [$secret]: " new_value
+                        if [ ! -z $new_value ]
+                            then
+                                secret=$new_value
+                    fi
+                fi
+
+                if [ ! -z $region ]
+                    then
+                        read -p "The AWS region in which your bucket exists? [$region]: " new_value
+                        if [ ! -z $new_value ]
+                            then
+                                region=$new_value
+                    fi
+                fi
+
+                if [ ! -z $bucket ]
+                    then
+                        read -p "The bucket name in which you want to store the registry's data? [$bucket]: " new_value
+                        if [ ! -z $new_value ]
+                            then
+                                bucket=$new_value
+                    fi
+                fi
+
+        fi
+
+
+
         echo -e "\nDoes this look right?\n"
         echo "Hostname          : $hostname"
         echo "Port              : $port"
-        echo "AWS Key           : $access_key"
-        echo "AWS Secret        : $secret"
-        echo "AWS Region        : $region"
-        echo "AWS Bucket        : $bucket"
+
+
+
 
         echo "SMTP address      : $smtp_address"
         echo "SMTP port         : $smtp_port"
         echo "SMTP username     : $smtp_user_name"
         echo "SMTP password     : $smtp_password"
 
-         echo "New Relic        : $new_relic"
+        echo "New Relic         : $new_relic"
+
+        if [ $aws == "y" ]
+            then
+                echo "AWS Key           : $access_key"
+                echo "AWS Secret        : $secret"
+                echo "AWS Region        : $region"
+                echo "AWS Bucket        : $bucket"
+                registry_config_file="config/registry/aws.config.yml"
+        else
+            registry_config_file="config/registry/config.yml"
+        fi
 
         echo ""
         read -p "ENTER to continue, 'n' to try again, Ctrl+C to exit: " config_ok
     done
 
+    exit;
+    
     cp $registry_tmp_file $registry_config_file
     cp $portus_tmp_file $portus_config_file
 
     sed -i "s/EXTERNAL_IP/$hostname/g"                  $registry_config_file
     sed -i "s/REGISTRY_PORT/$port/g"                    $registry_config_file
-    sed -i "s/AWS_REGION/$region/g"                     $registry_config_file
-    sed -i "s/AWS_BUCKET/$bucket/g"                     $registry_config_file
-    sed -i "s/AWS_KEY/$access_key/g"                    $registry_config_file
-    sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
-    sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
+
+    if [ $aws == "y" ]
+        then
+            sed -i "s/AWS_REGION/$region/g"                     $registry_config_file
+            sed -i "s/AWS_BUCKET/$bucket/g"                     $registry_config_file
+            sed -i "s/AWS_KEY/$access_key/g"                    $registry_config_file
+            sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
+    fi
+
     sed -i "s/NEW_RELIC/$new_relic/g"                   $registry_config_file
 
     sed -i "s/SMTP_HOST/$smtp_address/g"        $portus_config_file

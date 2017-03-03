@@ -2,8 +2,12 @@ version: 0.1
 log:
   level: info
 storage:
-  filesystem:
-    rootdirectory: /registry_data
+  s3:
+    accesskey: AWS_KEY
+    secretkey: AWS_SECRET
+    region: AWS_REGION
+    bucket: AWS_BUCKET
+    v4auth: true
   delete:
     enabled: true
 http:
