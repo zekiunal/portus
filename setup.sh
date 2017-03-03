@@ -32,7 +32,8 @@ cron_container="portus_cron"
 registry_container="portus_registry"
 
 # Portus github address
-GIT=" -b 2.1.1 --single-branch --depth 1 https://github.com/SUSE/Portus.git"
+GIT="https://github.com/SUSE/Portus.git"
+
 VERSION=0.1
 clean() {
     echo "The setup will destroy the containers used by Portus, removing also their volumes."
