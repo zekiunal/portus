@@ -139,7 +139,7 @@ machine_fqdn:
 # it might confuse users that are not fully aware of it. You can read more about
 # it here: http://port.us.org/features/display_name.html
 display_name:
-  enabled: true
+  enabled: false
 
 user_permission:
   # Allow users to change the visibility or their personal namespace. If this is
@@ -147,9 +147,19 @@ user_permission:
   change_visibility:
     enabled: true
 
+  # Allow users to create teams. If this is disabled only an admin will be able
+  # to do this. This defaults to true.
+  create_team:
+    enabled: true
+
   # Allow users to create/modify teams if they are an owner of it. If this is
   # disabled only an admin will be able to do this. This defaults to true.
   manage_team:
+    enabled: true
+
+  # Allow users to create namespaces. If this is disabled, only an admin will
+  # be able to do this. This defaults to true.
+  create_namespace:
     enabled: true
 
   # Allow users to create/modify namespaces if they are an owner of it. If this
