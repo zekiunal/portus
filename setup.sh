@@ -1,6 +1,7 @@
 #!/bin/bash
 # Default variables
 hostname="registry.domain.com"
+port="5000"
 registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
 
 # AWS S3 Setting Default variables
@@ -57,6 +58,7 @@ download_portus() {
 database_up() {
     echo "Database service create"
     docker rm -f ${db_container}
+    rm -fr /mysql/data
     docker run -d --name ${db_container} -v /mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD="portus" library/mariadb:10.0.23
     sleep 10
 }
@@ -72,19 +74,42 @@ web_build() {
 web_up() {
     echo "Portus Web up"
     docker rm -f ${web_container}
-    docker run -d --link ${db_container} --name ${web_container} -v ${PWD}/portus:/portus -p 3000:3000 -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} puma -b tcp://0.0.0.0:3000 -w 3
+    docker run -d --link ${db_container} --name ${web_container} \
+        -v ${PWD}/portus:/portus \
+        -p 3000:3000 \
+        -e PORTUS_MACHINE_FQDN_VALUE=${hostname} \
+        -e PORTUS_DB_HOST=${db_container} \
+        -e PORTUS_DB_PASSWORD=portus \
+        -e PORTUS_PUMA_HOST=0.0.0.0:3000 \
+        -e PORTUS_PUMA_WORKERS=2 \
+        -e PORTUS_PUMA_MAX_THREADS=4 \
+        ${web_container} pumactl -F /portus/config/puma.rb start
 }
 
 cron_up() {
     echo "Portus Crone up"
     docker rm -f ${cron_container}
-    docker run -d --link ${db_container} -v ${PWD}/portus:/portus --entrypoint="bin/crono" --name ${cron_container} -e PORTUS_MACHINE_FQDN=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container}
+    docker run -d --link ${db_container} --name ${cron_container} \
+        -v ${PWD}/portus:/portus \
+        --entrypoint="bin/crono" \
+        -e PORTUS_MACHINE_FQDN_VALUE=${hostname} \
+        -e PORTUS_DB_HOST=${db_container} \
+        -e PORTUS_DB_PASSWORD=portus \
+        ${web_container}
 }
 
 registry_up() {
     echo "Portus Registry up"
     docker rm -f ${registry_container}
-    docker run -d --link ${web_container} -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro -v /registry_data:/registry_data --name ${registry_container} -p 5001:5001 -p 5000:5000 -e PORTUS_MACHINE_FQDN=${hostname} -e PORTUS_DB_HOST=${db_container} library/registry:2.3.1
+    docker run -d --link ${web_container} --name ${registry_container} \
+        -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro \
+        -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro \
+        -v /registry_data:/registry_data \
+        -p 5001:5001 -p 5000:5000 \
+        -e REGISTRY_AUTH_TOKEN_REALM=http://${hostname}:3000/v2/token
+        -e REGISTRY_AUTH_TOKEN_SERVICE=${hostname}:${port}
+        -e REGISTRY_AUTH_TOKEN_ISSUER=${hostname}
+        library/registry:2.3.1
 }
 
 user_config() {
