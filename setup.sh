@@ -106,9 +106,9 @@ registry_up() {
         -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro \
         -v /registry_data:/registry_data \
         -p 5001:5001 -p 5000:5000 \
-        -e REGISTRY_AUTH_TOKEN_REALM=http://${hostname}:3000/v2/token
-        -e REGISTRY_AUTH_TOKEN_SERVICE=${hostname}:${port}
-        -e REGISTRY_AUTH_TOKEN_ISSUER=${hostname}
+        -e REGISTRY_AUTH_TOKEN_REALM=http://${hostname}:3000/v2/token \
+        -e REGISTRY_AUTH_TOKEN_SERVICE=${hostname}:${port} \
+        -e REGISTRY_AUTH_TOKEN_ISSUER=${hostname} \
         library/registry:2.3.1
 }
 
