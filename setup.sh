@@ -1,6 +1,8 @@
 #!/bin/bash
+docker rm -f portus_registry portus_web portus_cron portus_db
+docker system prune -fa
 # Default variables
-hostname="registry.domain.com"
+hostname="registry.monapi.com"
 port="5000"
 registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
 
@@ -13,11 +15,11 @@ bucket="bucket.registry.domain.com"
 # SMTP Settings
 smtp_address="smtp.elasticemail.com"
 smtp_port="587"
-smtp_user_name="username"
-smtp_password="user_password"
+smtp_user_name="social@monapi.com"
+smtp_password="90be52d4-58e6-4109-93ed-9ae9d8aac7d"
 
 # New Relic Settings
-new_relic="916a6593baf44f256c9835b90b622b410ac1248ez"
+new_relic="916a6593baf44f256c9835b90b622b410ac1248"
 
 # config files
 registry_config_file="config/registry/config.yml"
@@ -34,7 +36,7 @@ registry_container="portus_registry"
 
 # Portus github address
 GIT="https://github.com/SUSE/Portus.git"
-
+PORTUS_VER="v2.2"
 VERSION=0.1
 clean() {
     echo "The setup will destroy the containers used by Portus, removing also their volumes."
@@ -52,7 +54,7 @@ clean() {
 download_portus() {
     echo "Portus clone from GitHub"
     sudo rm -fr portus
-    git clone ${GIT} ${PWD}/portus
+    git clone ${GIT} -b ${PORTUS_VER} ${PWD}/portus
 }
 
 database_up() {
@@ -116,7 +118,7 @@ user_config() {
     local delete="true"
     local ssl="false"
 
-    local aws="y"
+    local aws="n"
     local access_key=$access_key
     local secret=$secret
     local region=$region
