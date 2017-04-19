@@ -10,12 +10,13 @@ COPY Gemfile* ./
 
 RUN bundle install --retry=3 && bundle binstubs phantomjs
 
-RUN cd /portus
+
+ADD . .
+
+#RUN cd /portus
 
 RUN yarn install
 
 RUN npm install webpack -g
-
-ADD . .
 
 RUN webpack --watch --config /portus/config/webpack.js
