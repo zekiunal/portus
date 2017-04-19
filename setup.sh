@@ -36,7 +36,7 @@ registry_container="portus_registry"
 
 # Portus github address
 GIT="https://github.com/SUSE/Portus.git"
-PORTUS_VER="v2.2"
+PORTUS_VER="master"
 VERSION=0.1
 clean() {
     echo "The setup will destroy the containers used by Portus, removing also their volumes."
