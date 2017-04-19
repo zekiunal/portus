@@ -19,4 +19,4 @@ RUN yarn install
 
 RUN npm install webpack -g
 
-CMD ["webpack --watch --config config/webpack.js"]
+RUN  rake webpack:compile
