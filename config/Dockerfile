@@ -10,7 +10,6 @@ COPY Gemfile* ./
 
 RUN bundle install --retry=3 && bundle binstubs phantomjs
 
-
 ADD . .
 
 #RUN cd /portus
