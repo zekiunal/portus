@@ -24,8 +24,8 @@ RUN apt-get install -y yarn
 
 RUN yarn install
 
-RUN npm install webpack -g
+RUN cd portus && npm install webpack -g
 
-#RUN webpack --watch --config config/webpack.js
+RUN webpack --watch --config config/webpack.js
 
 ADD . .
