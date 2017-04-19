@@ -19,4 +19,4 @@ RUN yarn install
 
 RUN npm install webpack -g
 
-RUN webpack --watch --config config/webpack.js
+CMD ["webpack --watch --config config/webpack.js"]
