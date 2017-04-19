@@ -22,9 +22,9 @@ RUN apt-get install -y apt-transport-https && \
 
 RUN apt-get install -y yarn
 
-# RUN yarn install
+RUN yarn install
 
-#RUN npm install webpack -g
+RUN npm install webpack -g
 
 #RUN webpack --watch --config config/webpack.js
 
