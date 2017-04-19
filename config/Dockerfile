@@ -16,6 +16,6 @@ RUN yarn install
 
 RUN npm install webpack -g
 
-RUN webpack --watch --config /portus/config/webpack.js
-
 ADD . .
+
+RUN webpack --watch --config /portus/config/webpack.js
