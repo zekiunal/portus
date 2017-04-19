@@ -67,6 +67,7 @@ database_up() {
 
 web_build() {
     echo "Portus Web Building"
+    cp config/Dockerfile portus/Dockerfile
     cp $portus_config_file portus/config/config.yml
     #cd portus && docker build --no-cache -t ${web_container} .
     cd portus && docker build -t ${web_container} .
