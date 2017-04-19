@@ -322,8 +322,8 @@ registry_up
 
 docker run --rm --link ${db_container}  -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} rake db:migrate:reset  > /dev/null
 docker run --rm --link ${db_container}  -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} rake db:seed  > /dev/null
-#docker run --rm --link ${db_container}  -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} npm install  > /dev/null
-#docker run --rm --link ${db_container}  -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} rake webpack:compile  > /dev/null
+docker run --rm --link ${db_container}  -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} npm install  > /dev/null
+docker run --rm --link ${db_container}  -e PORTUS_MACHINE_FQDN_VALUE=${hostname} -e PORTUS_DB_HOST=${db_container} ${web_container} rake webpack:compile  > /dev/null
 
 
 
