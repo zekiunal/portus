@@ -18,4 +18,4 @@ RUN yarn install
 
 RUN npm install  && npm install webpack -g
 
-RUN rake webpack:compile
+#RUN rake webpack:compile
