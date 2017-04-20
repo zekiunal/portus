@@ -12,8 +12,6 @@ RUN bundle install --retry=3 && bundle binstubs phantomjs
 
 ADD . .
 
-#RUN cd /portus
-
 RUN yarn install
 
 #RUN npm install  && npm install webpack -g
