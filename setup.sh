@@ -61,7 +61,8 @@ database_up() {
     echo "Database service create"
     docker rm -f ${db_container}
     rm -fr /mysql/data
-    docker run -d --name ${db_container} -v /mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD="portus" library/mariadb:10.0.23
+    rm -fr /registry_data/mysql_portus/data
+    docker run -d --name ${db_container} -v /registry_data/mysql_portus/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD="portus" library/mariadb:10.0.23
     sleep 10
 }
 
