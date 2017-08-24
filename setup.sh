@@ -182,8 +182,8 @@ user_config() {
         fi
 
         echo -e "\nDoes this look right?\n"
-        echo "Hostname          :   $registry_domain"
-        echo "Port              :   $port"
+        echo "Hostname          : $registry_domain"
+        echo "Port              : $port"
 
         echo "SMTP address      : $smtp_address"
         echo "SMTP port         : $smtp_port"
