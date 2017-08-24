@@ -338,3 +338,4 @@ webpack_up
 web_build
 web_up
 cron_up
+registry_up
