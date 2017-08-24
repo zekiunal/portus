@@ -78,15 +78,6 @@ user_config() {
             fi
         fi
 
-        if [ ! -z $registry_domain ]
-            then
-                read -p "Hostname for your Portus? [$registry_domain]: " new_value
-            if [ ! -z $new_value ]
-                then
-                    registry_domain=$new_value
-            fi
-        fi
-
         if [ ! -z $port ]
             then
                 read -p "Port for your registry? [$port]: " new_value
