@@ -71,7 +71,7 @@ user_config() {
     do
         if [ ! -z $registry_domain ]
             then
-                read -p "Hostname for your Portus? [$registry_domain]: " new_value
+                read -p "Hostname for your Portus? [${registry_domain}]: " new_value
             if [ ! -z $new_value ]
                 then
                     registry_domain=$new_value
