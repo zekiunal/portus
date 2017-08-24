@@ -223,7 +223,8 @@ user_config() {
             sed -i "s/AWS_SECRET/$secret/g"                     $registry_config_file
     fi
 
-    sed -i "s/NEW_RELIC/$new_relic/g"                   $registry_config_file
+    sed -i "s/NEW_RELIC/$new_relic/g"                       $registry_config_file
+    sed -i "s/HOSTNAME/$registry_domain/g"                  $registry_config_file
 
     sed -i "s/SMTP_HOST/$smtp_address/g"        $portus_config_file
     sed -i "s/SMTP_PORT/$smtp_port/g"           $portus_config_file
@@ -298,6 +299,34 @@ webpack_up() {
         kkarczmarczyk/node-yarn:6.9-slim bash /srv/Portus/examples/development/compose/bootstrap-webpack
 }
 
+cron_up() {
+    echo "Portus Crone up"
+    docker rm -f ${cron_container}
+    docker run -d --link ${db_container} --name ${cron_container} \
+        -v ${PWD}/portus:/srv/Portus \
+        -w="/srv/Portus" \
+        -e PORTUS_MACHINE_FQDN_VALUE=${registry_domain} \
+        -e PORTUS_DB_HOST=${db_container} \
+        -e PORTUS_DB_PASSWORD=portus \
+        ${web_container} ./bin/crono
+}
+
+
+registry_up() {
+    echo "Portus Registry up"
+    docker rm -f ${registry_container}
+    docker run -d --link ${web_container} --name ${registry_container} \
+        -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro \
+        -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro \
+        -v /registry_data:/registry_data \
+        -p 5001:5001 -p ${port}:5000 \
+        -e REGISTRY_AUTH_TOKEN_REALM=http://${registry_domain}:3000/v2/token \
+        -e REGISTRY_AUTH_TOKEN_SERVICE=${registry_domain}:${port} \
+        -e REGISTRY_AUTH_TOKEN_ISSUER=${registry_domain} \
+        library/registry:2.3.1
+}
+
+
 echo "Portus Installer v${VERSION} Zeki Ünal and contributors."
 echo "-------------------------------------------------"
 
@@ -308,3 +337,4 @@ download_portus
 webpack_up
 web_build
 web_up
+cron_up
