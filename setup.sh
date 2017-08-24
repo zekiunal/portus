@@ -45,5 +45,29 @@ user_config() {
     echo "User Config"
 }
 
+clean() {
+    echo "The setup will destroy the containers used by Portus, removing also their volumes."
+    while true; do
+        read -p "Are you sure to delete all the data? (Y/N) [Y] " yn
+        case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) exit 1;;
+            "" ) break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
+download_portus() {
+    echo "Portus clone from GitHub"
+    sudo rm -fr portus
+    git clone ${GIT} -b ${PORTUS_VER} ${PWD}/portus
+}
+
+
 echo "Portus Installer v${VERSION} Zeki Ünal and contributors."
 echo "-------------------------------------------------"
+
+user_config
+clean
+download_portus
