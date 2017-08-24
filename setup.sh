@@ -273,6 +273,21 @@ web_build() {
     cd /portus_setup
 }
 
+
+web_up() {
+    echo "Portus Web up"
+    docker rm -f ${web_container}
+    docker run -d --link ${db_container} --name ${web_container} \
+        -v ${PWD}/portus:/srv/Portus \
+        -p 3000:3000 \
+        -e PORTUS_MACHINE_FQDN_VALUE=${hostname} \
+        -e PORTUS_PUMA_HOST=0.0.0.0:3000 \
+        -e PORTUS_DB_HOST=${db_container} \
+        -e PORTUS_DB_PASSWORD=portus \
+        -e RAILS_SERVE_STATIC_FILES=true \
+        ${web_container} bash /srv/Portus/examples/development/compose/init
+}
+
 echo "Portus Installer v${VERSION} Zeki Ünal and contributors."
 echo "-------------------------------------------------"
 
