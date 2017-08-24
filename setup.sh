@@ -7,13 +7,14 @@ cron_container="portus_cron"
 registry_container="portus_registry"
 webpack_container="portus_webpack"
 
-docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container}
-docker system prune -fa
 
 # Default variables
 registry_domain="registry.monapi.com"
 port="5000"
 registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
+
+docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container}
+docker system prune -fa
 
 # AWS S3 Setting Default variables
 access_key="AWS_KEY"
@@ -319,7 +320,8 @@ registry_up() {
         -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro \
         -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro \
         -v /registry_data:/registry_data \
-        -p 5001:5001 -p ${port}:5000 \
+        -p 5001:5001 \
+        -p ${port}:5000 \
         -e REGISTRY_AUTH_TOKEN_REALM=http://${registry_domain}:3000/v2/token \
         -e REGISTRY_AUTH_TOKEN_SERVICE=${registry_domain}:${port} \
         -e REGISTRY_AUTH_TOKEN_ISSUER=${registry_domain} \
