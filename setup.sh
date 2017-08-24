@@ -233,7 +233,7 @@ user_config() {
     sed -i "s/DELETE/$delete/g"                 $portus_config_file
     sed -i "s/SSL/$ssl/g"                       $portus_config_file
 
-    sed -i "s/=HOSTNAME/=$registry_domain/g"                       $env_file
+    sed -i "s/=HOSTNAME/=$registry_domain/g"                $env_file
     sed -i "s/=REGISTRY_PORT/=$port/g"                      $env_file
 }
 
@@ -256,10 +256,29 @@ download_portus() {
     git clone ${GIT} -b ${PORTUS_VER} ${PWD}/portus
 }
 
+database_up() {
+    echo "Database service create"
+    docker rm -f ${db_container}
+    rm -fr /mysql/data
+    rm -fr /registry_data/mysql_portus/data
+    docker run -d --name ${db_container} -v /registry_data/mysql_portus/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD="portus" library/mariadb:10.0.23
+    sleep 10
+}
+
+web_build() {
+    echo "Portus Web Building"
+    #cp config/Dockerfile portus/Dockerfile
+    cp $portus_config_file portus/config/config.yml
+    cd portus && docker build --no-cache -t ${web_container} .
+    #cd portus && docker build -t ${web_container} .
+    cd /portus_setup
+}
 
 echo "Portus Installer v${VERSION} Zeki Ünal and contributors."
 echo "-------------------------------------------------"
 
 user_config
 clean
+database_up
 download_portus
+web_build
