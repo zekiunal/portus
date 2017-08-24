@@ -10,7 +10,7 @@ docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_conta
 docker system prune -fa
 
 # Default variables
-hostname="registry.monapi.com"
+registry_domain="registry.monapi.com"
 port="5000"
 registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
 
@@ -47,7 +47,7 @@ user_config() {
     local delete="true"
     local ssl="false"
 
-    local hostname=$hostname
+    local registry_domain=$registry_domain
     local aws="n"
     local access_key=$access_key
     local secret=$secret
@@ -68,12 +68,12 @@ user_config() {
 
     while [[ "$config_ok" == "n" ]]
     do
-        if [ ! -z $hostname ]
+        if [ ! -z $registry_domain ]
             then
-                read -p "Hostname for your Portus? [$hostname]: " new_value
+                read -p "Hostname for your Portus? [$registry_domain]: " new_value
             if [ ! -z $new_value ]
                 then
-                    hostname=$new_value
+                    registry_domain=$new_value
             fi
         fi
 
@@ -183,7 +183,7 @@ user_config() {
 
 
         echo -e "\nDoes this look right?\n"
-        echo "Hostname          : $hostname"
+        echo "Hostname          : $registry_domain"
         echo "Port              : $port"
 
 
@@ -215,7 +215,7 @@ user_config() {
     cp $portus_tmp_file     $portus_config_file
     cp $env_tmp_file        $env_file
 
-    sed -i "s/EXTERNAL_IP/$hostname/g"                  $registry_config_file
+    sed -i "s/EXTERNAL_IP/$registry_domain/g"                  $registry_config_file
     sed -i "s/REGISTRY_PORT/$port/g"                    $registry_config_file
 
     if [ $aws == "y" ]
@@ -232,12 +232,12 @@ user_config() {
     sed -i "s/SMTP_PORT/$smtp_port/g"           $portus_config_file
     sed -i "s/SMTP_USER/$smtp_user_name/g"      $portus_config_file
     sed -i "s/SMTP_PASSWORD/$smtp_password/g"   $portus_config_file
-    sed -i "s/SMTP_DOMAIN/$hostname/g"          $portus_config_file
-    sed -i "s/HOSTNAME/$hostname/g"             $portus_config_file
+    sed -i "s/SMTP_DOMAIN/$registry_domain/g"          $portus_config_file
+    sed -i "s/HOSTNAME/$registry_domain/g"             $portus_config_file
     sed -i "s/DELETE/$delete/g"                 $portus_config_file
     sed -i "s/SSL/$ssl/g"                       $portus_config_file
 
-    sed -i "s/=HOSTNAME/=$hostname/g"                       $env_file
+    sed -i "s/=HOSTNAME/=$registry_domain/g"                       $env_file
     sed -i "s/=REGISTRY_PORT/=$port/g"                      $env_file
 }
 
