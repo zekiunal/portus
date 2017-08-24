@@ -5,6 +5,7 @@ db_container="portus_db"
 web_container="portus_web"
 cron_container="portus_cron"
 registry_container="portus_registry"
+webpack_container="portus_webpack"
 
 docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container}
 docker system prune -fa
@@ -288,6 +289,15 @@ web_up() {
         ${web_container} bash /srv/Portus/examples/development/compose/init
 }
 
+webpack_up() {
+    echo "Portus WebPack up"
+    docker rm -f ${webpack_container}
+    docker run -d --name ${webpack_container} \
+        -v ${PWD}/portus:/srv/Portus \
+        -w="/srv/Portus" \
+        kkarczmarczyk/node-yarn:6.9-slim bash /srv/Portus/examples/development/compose/bootstrap-webpack
+}
+
 echo "Portus Installer v${VERSION} Zeki Ünal and contributors."
 echo "-------------------------------------------------"
 
@@ -295,5 +305,6 @@ user_config
 clean
 database_up
 download_portus
+webpack_up
 web_build
 web_up
