@@ -61,7 +61,7 @@ user_config() {
 
     local new_relic=$new_relic
 
-    local port=5000
+    local port=$port
 
     local config_ok="n"
     local new_value=""
