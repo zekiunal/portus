@@ -296,3 +296,4 @@ clean
 database_up
 download_portus
 web_build
+web_up
