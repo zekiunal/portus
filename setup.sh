@@ -65,7 +65,7 @@ user_config() {
     local port=$port
 
     local config_ok="n"
-    local new_value
+    local new_value="registry.monapi.com"
 
     while [[ "$config_ok" == "n" ]]
     do
