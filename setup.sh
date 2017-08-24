@@ -47,7 +47,7 @@ user_config() {
     local delete="true"
     local ssl="false"
 
-    local registry_domain=$registry_domain
+
     local aws="n"
     local access_key=$access_key
     local secret=$secret
@@ -61,6 +61,7 @@ user_config() {
 
     local new_relic=$new_relic
 
+    local registry_domain=$registry_domain
     local port=$port
 
     local config_ok="n"
