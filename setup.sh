@@ -71,7 +71,7 @@ user_config() {
     do
         if [ ! -z $registry_domain ]
             then
-                read -p "Hostname for your Portus? [${registry_domain}]: " new_value
+                read -p "Hostname for your Portus? [$registry_domain]: " new_value
             if [ ! -z $new_value ]
                 then
                     registry_domain=$new_value
@@ -182,8 +182,8 @@ user_config() {
         fi
 
         echo -e "\nDoes this look right?\n"
-        echo "Hostname          : $registry_domain"
-        echo "Port              : $port"
+        echo "Hostname          :   $registry_domain"
+        echo "Port              :   $port"
 
         echo "SMTP address      : $smtp_address"
         echo "SMTP port         : $smtp_port"
@@ -211,8 +211,8 @@ user_config() {
     cp $portus_tmp_file     $portus_config_file
     cp $env_tmp_file        $env_file
 
-    sed -i "s/EXTERNAL_IP/$registry_domain/g"                  $registry_config_file
-    sed -i "s/REGISTRY_PORT/$port/g"                    $registry_config_file
+    sed -i "s/EXTERNAL_IP/$registry_domain/g"                   $registry_config_file
+    sed -i "s/REGISTRY_PORT/$port/g"                            $registry_config_file
 
     if [ $aws == "y" ]
         then
