@@ -236,7 +236,7 @@ user_config() {
     sed -i "s/DELETE/$delete/g"                 $portus_config_file
     sed -i "s/SSL/$ssl/g"                       $portus_config_file
 
-    sed -i "s/HOSTNAME/$hostname/g"                         $env_file
+    sed -i "s/=HOSTNAME/=$hostname/g"                       $env_file
     sed -i "s/=REGISTRY_PORT/=$port/g"                      $env_file
 }
 
