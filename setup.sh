@@ -47,6 +47,7 @@ user_config() {
     local delete="true"
     local ssl="false"
 
+    local hostname=$hostname
     local aws="n"
     local access_key=$access_key
     local secret=$secret
