@@ -292,8 +292,8 @@ echo "Portus Installer v${VERSION} Zeki Ünal and contributors."
 echo "-------------------------------------------------"
 
 user_config
-clean
-database_up
-download_portus
-web_build
-web_up
+#clean
+#database_up
+#download_portus
+#web_build
+#web_up
