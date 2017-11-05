@@ -42,7 +42,7 @@ env_file="config/.env"
 
 # Portus github address
 GIT="https://github.com/SUSE/Portus.git"
-PORTUS_VER="master"
+PORTUS_VER="2.2"
 VERSION=0.2
 
 user_config() {
