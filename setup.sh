@@ -32,17 +32,22 @@ smtp_password="90be52d4-58e6-4109-93ed-9ae9d8aac7d"
 new_relic="916a6593baf44f256c9835b90b622b410ac1248"
 
 # config files
+registry_tmp_file="config/template/registry/config.yml.tmpl"
+registry_aws_tmp_file="config/template/registry/aws.config.yml.tmpl"
+portus_tmp_file="config/template/portus/config.yml.tmpl"
+
 registry_config_file="config/registry/config.yml"
-registry_tmp_file="config/registry/config.yml.tmpl"
+registry_aws_config_file="config/registry/aws.config.yml"
+portus_config_file="config/portus/config.yml"
+
 registry_crt_file="config/registry/portus.crt"
-portus_config_file="config/web/config.yml"
-portus_tmp_file="config/web/config.yml.tmpl"
+
 env_tmp_file="config/.env.tmpl"
 env_file="config/.env"
 
 # Portus github address
 GIT="https://github.com/SUSE/Portus.git"
-PORTUS_VER="v2.2"
+PORTUS_VER="master"
 VERSION=0.2
 
 user_config() {
@@ -200,9 +205,9 @@ user_config() {
                 echo "AWS Secret        : $secret"
                 echo "AWS Region        : $region"
                 echo "AWS Bucket        : $bucket"
-                registry_config_file="config/registry/aws.config.yml"
+                registry_config_file=$registry_aws_config_file
         else
-            registry_config_file="config/registry/config.yml"
+            registry_config_file=$registry_config_file
         fi
 
         echo ""
@@ -226,6 +231,7 @@ user_config() {
 
     sed -i "s/NEW_RELIC/$new_relic/g"                       $registry_config_file
     sed -i "s/HOSTNAME/$registry_domain/g"                  $registry_config_file
+    sed -i "s/REGISTRY_SECRET/$registry_http_secret/g"                  $registry_config_file
 
     sed -i "s/SMTP_HOST/$smtp_address/g"        $portus_config_file
     sed -i "s/SMTP_PORT/$smtp_port/g"           $portus_config_file
@@ -257,6 +263,8 @@ download_portus() {
     echo "Portus clone from GitHub"
     sudo rm -fr portus
     git clone ${GIT} -b ${PORTUS_VER} ${PWD}/portus
+    cp ${PWD}/Gemfile ${PWD}/portus/Gemfile
+    cp ${PWD}/Dockerfile ${PWD}/portus/Dockerfile
 }
 
 database_up() {
@@ -283,10 +291,11 @@ web_up() {
     docker run -d --link ${db_container} --name ${web_container} \
         -v ${PWD}/portus:/srv/Portus \
         -p 3000:3000 \
-        -e PORTUS_MACHINE_FQDN_VALUE=${hostname} \
+        -e PORTUS_MACHINE_FQDN_VALUE=${registry_domain} \
         -e PORTUS_PUMA_HOST=0.0.0.0:3000 \
         -e PORTUS_DB_HOST=${db_container} \
         -e PORTUS_DB_PASSWORD=portus \
+        -e PORTUS_DB_POOL=5 \
         -e RAILS_SERVE_STATIC_FILES=true \
         ${web_container} bash /srv/Portus/examples/development/compose/init
 }
@@ -309,19 +318,45 @@ cron_up() {
         -e PORTUS_MACHINE_FQDN_VALUE=${registry_domain} \
         -e PORTUS_DB_HOST=${db_container} \
         -e PORTUS_DB_PASSWORD=portus \
+        -e PORTUS_DB_POOL=5 \
         ${web_container} ./bin/crono
 }
 
 
 registry_up() {
+echo "Portus Registry up"
+docker rm -f ${registry_container}
+docker run -d --link ${web_container} --name ${registry_container} \
+-v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro \
+-v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro \
+-v /registry_data:/registry_data \
+-p 5001:5001 \
+-p ${port}:5000 \
+-e REGISTRY_AUTH_TOKEN_REALM=http://${registry_domain}:3000/v2/token \
+-e REGISTRY_AUTH_TOKEN_SERVICE=${registry_domain}:${port} \
+-e REGISTRY_AUTH_TOKEN_ISSUER=${registry_domain} library/registry:2.3.1
+}
+
+registry_up_new() {
     echo "Portus Registry up"
     docker rm -f ${registry_container}
     docker run -d --link ${web_container} --name ${registry_container} \
-        -v ${PWD}/config/registry/portus.crt:/etc/docker/registry/portus.crt:ro \
+        -v ${PWD}/examples/development/compose/portus.crt:/etc/docker/registry/portus.crt:ro \
         -v ${PWD}/config/registry/config.yml:/etc/docker/registry/config.yml:ro \
         -v /registry_data:/registry_data \
         -p 5001:5001 \
         -p ${port}:5000 \
+        -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/registry_data \
+        -e REGISTRY_STORAGE_DELETE_ENABLED=true \
+        -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
+        -e REGISTRY_HTTP_DEBUG_ADDR=0.0.0.0:5001 \
+        -e REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/etc/docker/registry/portus.crt \
+        -e REGISTRY_NOTIFICATIONS_ENDPOINTS=">
+        - name: portus
+          url: http://${registry_domain}:3000/v2/webhooks/events
+          timeout: 2000ms
+          threshold: 5
+          backoff: 1s" \
         -e REGISTRY_AUTH_TOKEN_REALM=http://${registry_domain}:3000/v2/token \
         -e REGISTRY_AUTH_TOKEN_SERVICE=${registry_domain}:${port} \
         -e REGISTRY_AUTH_TOKEN_ISSUER=${registry_domain} \

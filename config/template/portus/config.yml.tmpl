@@ -87,6 +87,72 @@ ldap:
     enabled: false
     attr: ""
 
+# OAuth support.
+oauth:
+  # If enabled, users can authenticate with their Google Account.
+  # Callback url: <host>/users/auth/google_oauth2/callback
+  google_oauth2:
+    enabled: false
+    # Credentials. Details on https://developers.google.com/identity/protocols/OpenIDConnect
+    id: ""
+    secret: ""
+    # If a domain (e.g. mycompany.com) is set, then only signups with email from this domain are allowed.
+    domain: ""
+    options:
+      # G Suite domain. If set, then only members of the domain can sign in/up.
+      # If it's empty then any google users con sign in/up.
+      hd: ""
+
+  # OpenID authentication support. If enabled, then users can authenticate with OpenID/Connect
+  # Callback url: <host>/users/auth/open_id/callback
+  open_id:
+    enabled: false
+    # Optional. If identifier set then user redirect to the OpenID provider.
+    # If not, then user is asked for identifier before redirect.
+    # Example https://openid.stackexchange.com
+    identifier: ""
+    # If a domain (e.g. mycompany.com) is set, then only signups with email from this domain are allowed.
+    domain: ""
+
+  # Github authentication support.
+  # Callback url: <host>/users/auth/github/callback
+  github:
+    enabled: false
+    # Application credentials.
+    client_id: ""
+    client_secret: ""
+    # Only members of organization's team can sign in/up with Github.
+    organization: ""
+    team: ""
+     # If a domain (e.g. mycompany.com) is set, then only signups with email from this domain are allowed.
+    domain: ""
+
+  # Gitlab authentication support.
+  # Callback url: <host>/users/auth/gitlab/callback
+  gitlab:
+    enabled: false
+    application_id: ""
+    secret: ""
+    # Only member of the group can sign in/up with Gitlab.
+    group: ""
+     # If a domain (e.g. mycompany.com) is set, then only signups with email from this domain are allowed.
+    domain: ""
+    # The Gitlab server to be used. If empty, then https://gitlab.com is assumed.
+    server: ""
+
+  # Bitbucket authentication support. Need permission to read email.
+  # Callback url: <host>/users/auth/bitbucket/callback
+  bitbucket:
+    enabled: false
+    # Application credentials.
+    key: ""
+    secret: ""
+     # If a domain (e.g. mycompany.com) is set, then only signups with email from this domain are allowed.
+    domain: ""
+    options:
+      # Only members of team can sign in/up with Bitbucket. Need permission to read team membership.
+      team: ""
+
 # Set first_user_admin to true if you want that the first user that signs up
 # to be an admin.
 #
@@ -130,6 +196,12 @@ registry:
   catalog_page:
     value: 100
 
+  # Set the timeout in seconds for requests to the registry. Only change this
+  # value if you are *really* sure that you have an exceptionally slow
+  # connection to your private Docker registry.
+  timeout:
+    value: 2
+
 # The FQDN of the machine where Portus is being deployed.
 machine_fqdn:
   value: HOSTNAME
@@ -166,6 +238,7 @@ user_permission:
   # is disabled, only an admin will be able to do this. This defaults to true.
   manage_namespace:
     enabled: true
+
 # Security scanner support. Add the server location for each driver in order to
 # enable it. If no drivers have been enabled, then this feature is skipped
 # altogether. Enabling multiple drivers will simply aggregate the information
@@ -193,3 +266,8 @@ security:
   # This backend is only used for testing purposes, don't use it.
   dummy:
     server: ""
+
+# Allow anonymous (non-logged-in) users to explore the images available in your
+# Docker Registry. Only images on public namespaces will be shown.
+anonymous_browsing:
+  enabled: true

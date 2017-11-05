@@ -5,7 +5,7 @@ Using S3 for backend storage.
 ## Create a new bucket for Docker Registry on S3 
 
     Go to AWS Services -> S3 and create a new bucket (e.g "docker-registry") on your region
-    
+    #sed -i 's/\r//' setup.sh && ./setup.sh
 ## Create a user to allow our docker registry to access the new bucket
 
     Goto AWS Services -> IAM -> Create New Users
