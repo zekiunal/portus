@@ -1,6 +1,6 @@
 FROM zekiunal/portus_web
 
-COPY Gemfile* ./
+#COPY Gemfile* ./
 
 # Let's explain this RUN command:
 #   1. First of all we refresh, since opensuse/ruby does a zypper clean -a in
