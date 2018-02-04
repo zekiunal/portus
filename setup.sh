@@ -6,7 +6,8 @@ web_container="portus_web"
 cron_container="portus_cron"
 registry_container="portus_registry"
 webpack_container="portus_webpack"
-
+postgres_container="portus_postgres"
+clair_container="portus_clair"
 
 # Default variables
 registry_domain="registry.monapi.com"
@@ -315,11 +316,13 @@ cron_up() {
     docker run -d --link ${db_container} --name ${cron_container} \
         -v ${PWD}/portus:/srv/Portus \
         -w="/srv/Portus" \
+        -e PORTUS_SECURITY_CLAIR_SERVER=http://${clair_container}:6060 \
+        -e CCONFIG_PREFIX=PORTUS \
         -e PORTUS_MACHINE_FQDN_VALUE=${registry_domain} \
         -e PORTUS_DB_HOST=${db_container} \
         -e PORTUS_DB_PASSWORD=portus \
         -e PORTUS_DB_POOL=5 \
-        ${web_container} ./bin/crono
+        ${web_container} bundle exec rails runner /srv/Portus/bin/background.rb
 }
 
 
@@ -335,6 +338,22 @@ docker run -d --link ${web_container} --name ${registry_container} \
 -e REGISTRY_AUTH_TOKEN_REALM=http://${registry_domain}:3000/v2/token \
 -e REGISTRY_AUTH_TOKEN_SERVICE=${registry_domain}:${port} \
 -e REGISTRY_AUTH_TOKEN_ISSUER=${registry_domain} library/registry:2.3.1
+}
+
+postgres_up() {
+    echo "Postgres up"
+    docker rm -f ${postgres_container}
+    docker run -d  --name ${postgres_container} -e POSTGRES_PASSWORD="portus" library/postgres:10-alpine
+}
+
+clair_up() {
+    echo "clair up"
+    docker rm -f ${clair_container}
+    docker run  --name ${clair_container} -d --link ${postgres_container} -p 6060:6060 -p 6161 \
+    -e POSTGRES_PASSWORD="portus" \
+    -v /tmp:/tmp \
+    -v ./examples/development/compose/clair.yml:/clair.yml \
+    library/postgres:10-alpine -config /clair.yml
 }
 
 registry_up_new() {
@@ -370,6 +389,8 @@ echo "-------------------------------------------------"
 user_config
 clean
 database_up
+postgres_up
+clair_up
 download_portus
 webpack_up
 web_build
