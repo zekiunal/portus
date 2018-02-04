@@ -297,7 +297,7 @@ web_up() {
         -e PORTUS_DB_PASSWORD=portus \
         -e PORTUS_DB_POOL=5 \
         -e RAILS_SERVE_STATIC_FILES=true \
-        ${web_container} bash /srv/Portus/examples/development/compose/init
+        ${web_container} bundle exec rails runner /srv/Portus/examples/development/compose/init.rb
 }
 
 webpack_up() {
