@@ -349,11 +349,10 @@ postgres_up() {
 clair_up() {
     echo "clair up"
     docker rm -f ${clair_container}
-    docker run  --name ${clair_container} -d --link ${postgres_container} -p 6060:6060 -p 6161 \
-    -e POSTGRES_PASSWORD="portus" \
+    docker run  --name ${clair_container} -d --link ${postgres_container} -p 6060:6060 -p 6161:6161 \
     -v /tmp:/tmp \
     -v ./examples/development/compose/clair.yml:/clair.yml \
-    library/postgres:10-alpine -config /clair.yml
+    quay.io/coreos/clair:v2.0.1 -config /clair.yml
 }
 
 registry_up_new() {
