@@ -264,7 +264,7 @@ download_portus() {
     sudo rm -fr portus
     git clone ${GIT} -b ${PORTUS_VER} ${PWD}/portus
     #cp ${PWD}/Gemfile ${PWD}/portus/Gemfile
-    #cp ${PWD}/Dockerfile ${PWD}/portus/Dockerfile
+    cp ${PWD}/Dockerfile ${PWD}/portus/Dockerfile
 }
 
 database_up() {
