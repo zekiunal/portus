@@ -388,11 +388,12 @@ echo "-------------------------------------------------"
 user_config
 clean
 database_up
-postgres_up
-clair_up
+
 download_portus
 webpack_up
 web_build
+postgres_up
+clair_up
 web_up
 cron_up
 registry_up
