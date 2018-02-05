@@ -354,12 +354,12 @@ docker run  --name ${clair_container} -d --link ${postgres_container}:postgres -
 -v ${PWD}/examples/development/compose/clair.yml:/clair.yml:ro \
 quay.io/coreos/clair:v2.0.1 -config /clair.yml
 
-echo "clair up"
-docker rm -f portus_clair
-docker run  --name portus_clair -d --link portus_postgres:postgres -p 6060:6060 -p 6161:6161 \
--v /tmp:/tmp \
--v ${PWD}/examples/development/compose/clair.yml:/clair.yml:ro \
-quay.io/coreos/clair:v2.0.1 -config /clair.yml
+#echo "clair up"
+#docker rm -f portus_clair
+#docker run  --name portus_clair -d --link portus_postgres:postgres -p 6060:6060 -p 6161:6161 \
+#-v /tmp:/tmp \
+#-v ${PWD}/examples/development/compose/clair.yml:/clair.yml:ro \
+#quay.io/coreos/clair:v2.0.1 -config /clair.yml
 }
 
 registry_up_new() {
