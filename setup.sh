@@ -14,7 +14,7 @@ registry_domain="registry.monapi.com"
 port="5000"
 registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
 
-docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container}
+docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container} ${postgres_container} ${clair_container}
 docker system prune -fa
 
 # AWS S3 Setting Default variables
