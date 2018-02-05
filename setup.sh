@@ -351,7 +351,7 @@ clair_up() {
     docker rm -f ${clair_container}
     docker run  --name ${clair_container} -d --link ${postgres_container} -p 6060:6060 -p 6161:6161 \
     -v /tmp:/tmp \
-    -v ${PWD}/examples/development/compose/clair.yml:/clair.yml \
+    -v ${PWD}/examples/development/compose/clair.yml:/clair.yml:ro \
     quay.io/coreos/clair:v2.0.1 -config /clair.yml
 }
 
