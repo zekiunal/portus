@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 # container names
 db_container="portus_db"
 web_container="portus_web"
@@ -14,7 +16,7 @@ registry_domain="registry.monapi.com"
 port="5000"
 registry_http_secret=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
 
-docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container} ${postgres_container} ${clair_container}
+docker rm -f ${registry_container} ${web_container} ${cron_container} ${db_container} ${postgres_container} ${clair_container} ${webpack_container}
 docker system prune -fa
 
 # AWS S3 Setting Default variables
@@ -50,6 +52,15 @@ env_file="config/.env"
 GIT="https://github.com/SUSE/Portus.git"
 PORTUS_VER="master"
 VERSION=0.2
+
+while getopts n:m: option
+do
+case "${option}"
+in
+n) new_relic=${OPTARG};;
+m) smtp_password=${OPTARG};;
+esac
+done
 
 user_config() {
     local delete="true"
