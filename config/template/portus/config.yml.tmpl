@@ -192,7 +192,7 @@ registry:
   #
   # See: https://github.com/SUSE/Portus/issues/510
   jwt_expiration_time:
-    value: 5
+    value: 30
 
   # Set the pagination value for API calls that fetch data from the
   # registry. You can read more about pagination in the registry here:
@@ -296,7 +296,7 @@ security:
 # Allow anonymous (non-logged-in) users to explore the images available in your
 # Docker Registry. Only images on public namespaces will be shown.
 anonymous_browsing:
-  enabled: true
+  enabled: false
 
 
 # Configuration for the background tasks.

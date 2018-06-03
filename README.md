@@ -47,9 +47,10 @@ Using S3 for backend storage.
 ## Clone Portus Setup and run script
 
 ```
-    git clone https://github.com/zekiunal/portus /portus_setup
-    cd /portus_setup && chmod +x setup.sh
-    ./setup.sh
+    git clone -b 2.2 https://github.com/zekiunal/portus /portus_setup
+    cd /portus_setup 
+     chmod +x _setup.sh
+    ./_setup.sh
 ```
 
 ## Setup Screen
