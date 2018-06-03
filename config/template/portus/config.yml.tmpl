@@ -89,6 +89,10 @@ ldap:
 
 # OAuth support.
 oauth:
+   # If enabled, then users can login with portus credential.
+  # Otherwise, the users can only login via OAuth.
+  local_login:
+    enabled: true
   # If enabled, users can authenticate with their Google Account.
   # Callback url: <host>/users/auth/google_oauth2/callback
   google_oauth2:
@@ -239,6 +243,28 @@ user_permission:
   manage_namespace:
     enabled: true
 
+  # Allow users to create webhooks if they are an owner of the namespace
+  # containing it. If this is disabled, only an admin will be able to do
+  # this. This defaults to true.
+  create_webhook:
+    enabled: true
+
+  # Allow users to manage webhooks if they are an owner of the namespace
+  # containing it. If this is disabled, only an admin will be able to do
+  # this. This defaults to true.
+  manage_webhook:
+    enabled: true
+
+  # Define a push policy. There are three possible values:
+  #   1. allow-teams (default): leaves push policy at the team level: owners and
+  #      contributors can push. Portus administrators will also be able to push.
+  #   2. allow-personal: regular users can only push into their personal
+  #      namespaces. Owners and contributors cannot push into team owned
+  #      repositories: only Portus administrators will be able to push.
+  #   3. admin-only: only Portus administrators can push.
+  push_images:
+    policy: allow-teams
+
 # Security scanner support. Add the server location for each driver in order to
 # enable it. If no drivers have been enabled, then this feature is skipped
 # altogether. Enabling multiple drivers will simply aggregate the information
@@ -271,3 +297,36 @@ security:
 # Docker Registry. Only images on public namespaces will be shown.
 anonymous_browsing:
   enabled: true
+
+
+# Configuration for the background tasks.
+background:
+  # The registry integration: it processes the given registry events (e.g. a new
+  # tag was pushed). It's therefore highly *discouraged* to disable this task.
+  registry:
+    enabled: true
+
+  # Registry synchronization: it synchronizes all the contents from the registry
+  # into the database.
+  sync:
+    enabled: true
+
+    # There are four accepted values:
+    #   - update-delete: it performs a full synchronization.
+    #   - update: it only adds missing tags, but it does not remove any contents
+    #     from the database.
+    #   - on-start: when starting Portus it runs an `update-delete` and then it
+    #     gets disabled (i.e. it will only run once).
+    #   - initial: like `on-start`, but it only runs if the database is
+    #     empty. This is the default value since it's deemed to be the most
+    #     common use-case.
+    strategy: initial
+
+# Pagination configuration
+pagination:
+  # Number of entries to be listed per page
+  limit: 10
+
+  # Number of pages to be showed before and after the current one
+  # e,g.: Prev 1 2 [3] 4 5 Next
+  before_after: 2

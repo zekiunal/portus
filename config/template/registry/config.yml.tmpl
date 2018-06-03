@@ -12,8 +12,9 @@ http:
   debug:
     addr: 0.0.0.0:5001
 auth:
-  token:
-    rootcertbundle: /etc/docker/registry/portus.crt
+  silly:
+    realm: silly-realm
+    service: silly-service
 notifications:
   endpoints:
     - name: portus_web
