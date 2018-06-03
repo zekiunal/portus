@@ -21,7 +21,7 @@ new_relic="916a6593baf44f256c9835b90b622b410ac1248"
 
 # Portus github address
 GIT="https://github.com/SUSE/Portus.git"
-PORTUS_VER="master"
+PORTUS_VER="2.2"
 VERSION=0.2
 
 #env file
