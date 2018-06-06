@@ -6,7 +6,7 @@ services:
     image: opensuse/portus:development
     command: bundle exec rails runner /srv/Portus/examples/development/compose/init.rb
     environment:
-      - PORTUS_MACHINE_FQDN_VALUE=${MACHINE_FQDN}
+      - PORTUS_MACHINE_FQDN_VALUE=registry.monapi.com
       - PORTUS_PUMA_HOST=0.0.0.0:3000
       - PORTUS_CHECK_SSL_USAGE_ENABLED=false
       - PORTUS_SECURITY_CLAIR_SERVER=http://clair:6060
@@ -14,7 +14,7 @@ services:
       - CCONFIG_PREFIX=PORTUS
 
       - PORTUS_DB_HOST=db
-      - PORTUS_DB_PASSWORD=portus
+      - PORTUS_DB_PASSWORD=Bu@da@2212
       - PORTUS_DB_POOL=5
 
       - RAILS_SERVE_STATIC_FILES=true
@@ -34,14 +34,14 @@ services:
       - portus
       - db
     environment:
-      - PORTUS_MACHINE_FQDN_VALUE=${MACHINE_FQDN}
+      - PORTUS_MACHINE_FQDN_VALUE=registry.monapi.com
       - PORTUS_SECURITY_CLAIR_SERVER=http://clair:6060
 
       # Theoretically not needed, but cconfig's been buggy on this...
       - CCONFIG_PREFIX=PORTUS
 
       - PORTUS_DB_HOST=db
-      - PORTUS_DB_PASSWORD=portus
+      - PORTUS_DB_PASSWORD=Bu@da@2212
       - PORTUS_DB_POOL=5
     volumes:
       - .:/srv/Portus
@@ -56,7 +56,7 @@ services:
       - .:/srv/Portus
 
   clair:
-    image: quay.io/coreos/clair:v2.0.1
+    image: quay.io/coreos/clair:v2.0.2
     restart: unless-stopped
     depends_on:
       - postgres
@@ -73,15 +73,19 @@ services:
     image: library/mariadb:10.0.23
     command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
     environment:
-      MYSQL_ROOT_PASSWORD: portus
+      MYSQL_ROOT_PASSWORD: Bu@da@2212
+    volumes:
+      - /registry_data/mysql_portus/data:/var/lib/mysql
 
   postgres:
     image: library/postgres:10-alpine
     environment:
       POSTGRES_PASSWORD: portus
+    volumes:
+      - /registry_data/postgresql_portus/data:/var/lib/postgresql/data
 
   registry:
-    image: library/registry:2.3.1
+    image: library/registry:2.6
     environment:
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /registry_data
       REGISTRY_STORAGE_DELETE_ENABLED: "true"
@@ -91,21 +95,21 @@ services:
 
       REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /etc/docker/registry/portus.crt
 
-      REGISTRY_AUTH_TOKEN_REALM: http://${MACHINE_FQDN}:3000/v2/token
-      REGISTRY_AUTH_TOKEN_SERVICE: ${MACHINE_FQDN}:${REGISTRY_PORT}
-      REGISTRY_AUTH_TOKEN_ISSUER: ${MACHINE_FQDN}
+      REGISTRY_AUTH_TOKEN_REALM: http://registry.monapi.com:3000/v2/token
+      REGISTRY_AUTH_TOKEN_SERVICE: registry.monapi.com:5000
+      REGISTRY_AUTH_TOKEN_ISSUER: registry.monapi.com
 
       REGISTRY_NOTIFICATIONS_ENDPOINTS: >
         - name: portus
-          url: http://${MACHINE_FQDN}:3000/v2/webhooks/events
+          url: http://registry.monapi.com:3000/v2/webhooks/events
           timeout: 2000ms
           threshold: 5
           backoff: 1s
     volumes:
-      - /registry_data
+      - /registry_data/portus:/registry_data
       - ./examples/development/compose/portus.crt:/etc/docker/registry/portus.crt:ro
     ports:
-      - ${REGISTRY_PORT}:5000
+      - 5000:5000
       - 5001:5001
     links:
       - portus
