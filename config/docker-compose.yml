@@ -9,7 +9,6 @@ services:
       - PORTUS_MACHINE_FQDN_VALUE=registry.monapi.com
       - PORTUS_PUMA_HOST=0.0.0.0:3000
       - PORTUS_CHECK_SSL_USAGE_ENABLED=false
-      - PORTUS_SECURITY_CLAIR_SERVER=http://clair:6060
 
       - CCONFIG_PREFIX=PORTUS
 
@@ -35,7 +34,6 @@ services:
       - db
     environment:
       - PORTUS_MACHINE_FQDN_VALUE=registry.monapi.com
-      - PORTUS_SECURITY_CLAIR_SERVER=http://clair:6060
 
       # Theoretically not needed, but cconfig's been buggy on this...
       - CCONFIG_PREFIX=PORTUS
@@ -54,20 +52,6 @@ services:
     working_dir: /srv/Portus
     volumes:
       - .:/srv/Portus
-
-  clair:
-    image: quay.io/coreos/clair:v2.0.2
-    restart: unless-stopped
-    depends_on:
-      - postgres
-    links:
-      - postgres
-    ports:
-      - "6060-6061:6060-6061"
-    volumes:
-      - /tmp:/tmp
-      - ./examples/compose/clair/clair.yml:/clair.yml
-    command: [-config, /clair.yml]
 
   db:
     image: library/mariadb:10.0.23
